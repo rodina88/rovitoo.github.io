@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rodina Market</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+
+    <div id="auth-modal" class="modal show">
+        <div class="modal-content">
+            <h2 id="auth-title">Вход в Rodina Market</h2>
+            <form id="auth-form">
+                <input type="text" id="auth-login" placeholder="Логин или Email" required>
+                <input type="text" id="auth-username" placeholder="Придумайте логин (для регистрации)" style="display:none;">
+                <input type="email" id="auth-email" placeholder="Ваш Email (для регистрации)" style="display:none;">
+                <input type="password" id="auth-pass" placeholder="Пароль" required>
+                <input type="password" id="auth-confirm" placeholder="Подтвердите пароль" style="display:none;">
+                <button type="submit" class="btn-primary" id="auth-submit-btn">Войти</button>
+            </form>
+            <p id="auth-toggle">Нет аккаунта? <span onclick="toggleAuthMode()">Зарегистрироваться</span></p>
+        </div>
+    </div>
+
+    <div id="app" class="hidden">
+        <header class="navbar">
+            <div class="logo" onclick="navigateTo('home')">Rodina <span>Market</span></div>
+            <div class="nav-links">
+                <button onclick="navigateTo('create')" class="btn-add">➕ Подать объявление</button>
+                <button onclick="navigateTo('chats')">💬 Сообщения</button>
+                <button onclick="navigateTo('favorites')">⭐ Избранное</button>
+                <button onclick="navigateTo('profile-my')">👤 Профиль</button>
+                <button id="admin-nav-btn" class="hidden" onclick="navigateTo('admin')">👑 Админка</button>
+            </div>
+        </header>
+
+        <main class="container">
+            
+            <section id="page-home" class="page">
+                <div class="search-bar-container">
+                    <input type="text" id="search-input" placeholder="Поиск по названию или описанию...">
+                    <select id="filter-category">
+                        <option value="">Все категории</option>
+                        <option value="Автомобили">Автомобили</option>
+                        <option value="Недвижимость">Недвижимость</option>
+                        <option value="Бизнесы">Бизнесы</option>
+                        <option value="Работа">Работа</option>
+                        <option value="Аккаунты">Аккаунты</option>
+                        <option value="Аксессуары">Аксессуары</option>
+                        <option value="Услуги">Услуги</option>
+                        <option value="Другое">Другое</option>
+                    </select>
+                    <select id="filter-server"><option value="">Все серверы</option></select>
+                    <input type="number" id="filter-min-price" placeholder="Мин. цена">
+                    <input type="number" id="filter-max-price" placeholder="Макс. цена">
+                    <select id="filter-sort">
+                        <option value="date">По дате</option>
+                        <option value="price_asc">Дешевле</option>
+                        <option value="price_desc">Дороже</option>
+                        <option value="popular">По популярности</option>
+                    </select>
+                    <button class="btn-primary" onclick="loadItems()">Применить</button>
+                </div>
+
+                <div id="items-list" class="grid-layout">
+                    <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
+                </div>
+            </section>
+
+            <section id="page-item" class="page hidden">
+                <div class="item-detail-container">
+                    <div class="gallery" id="item-gallery"></div>
+                    <div class="item-info">
+                        <h1 id="item-title"></h1>
+                        <h2 id="item-price" class="price-tag"></h2>
+                        <p><strong>Сервер:</strong> <span id="item-server"></span></p>
+                        <p><strong>Продавец:</strong> <span id="item-author" class="link"></span></p>
+                        <p><strong>Просмотры:</strong> <span id="item-views"></span> | <span id="item-date"></span></p>
+                        <div class="item-actions">
+                            <button class="btn-primary" id="btn-write-seller">💬 Написать продавцу</button>
+                            <button class="btn-fav" id="btn-fav-toggle">⭐ В избранное</button>
+                        </div>
+                        <hr>
+                        <h3>Описание</h3>
+                        <p id="item-desc"></p>
+                        <p><strong>Контакты:</strong> <span id="item-contacts"></span></p>
+                    </div>
+                </div>
+                <div class="similar-block">
+                    <h3>Похожие объявления</h3>
+                    <div id="similar-items" class="grid-layout"></div>
+                </div>
+            </section>
+
+            <section id="page-create" class="page hidden">
+                <h2>Создать объявление</h2>
+                <form id="create-item-form" class="form-vertical">
+                    <input type="text" id="create-title" placeholder="Название товара" required>
+                    <textarea id="create-desc" placeholder="Полное описание товара" required></textarea>
+                    <input type="number" id="create-price" placeholder="Цена (вирты)" required>
+                    <select id="create-category" required>
+                        <option value="Автомобили">Автомобили</option>
+                        <option value="Недвижимость">Недвижимость</option>
+                        <option value="Бизнесы">Бизнесы</option>
+                        <option value="Работа">Работа</option>
+                        <option value="Аккаунты">Аккаунты</option>
+                        <option value="Аксессуары">Аксессуары</option>
+                        <option value="Услуги">Услуги</option>
+                        <option value="Другое">Другое</option>
+                    </select>
+                    <select id="create-server" required></select>
+                    <input type="text" id="create-contacts" placeholder="Ваш Discord, VK или Телефон" required>
+                    <input type="file" id="create-images" multiple accept="image/*">
+                    <button type="submit" class="btn-primary">Опубликовать</button>
+                </form>
+            </section>
+
+            <section id="page-chats" class="page hidden">
+                <div class="chat-container">
+                    <div class="dialogs-list" id="dialogs-container"></div>
+                    <div class="chat-window">
+                        <div class="chat-header" id="chat-header-user">Выберите диалог</div>
+                        <div class="chat-messages" id="chat-messages-box"></div>
+                        <form id="chat-input-form" class="chat-input-area hidden">
+                            <input type="text" id="chat-msg-text" placeholder="Введите сообщение...">
+                            <input type="file" id="chat-msg-img" accept="image/*" style="display:none;">
+                            <button type="button" onclick="document.getElementById('chat-msg-img').click()">🖼️</button>
+                            <button type="submit">Отправить</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page-favorites" class="page hidden">
+                <h2>Избранные объявления</h2>
+                <div id="favorites-list" class="grid-layout"></div>
+            </section>
+
+            <section id="page-profile" class="page hidden">
+                <div class="profile-header-card">
+                    <img id="prof-avatar" src="" alt="Avatar" class="avatar-large">
+                    <div>
+                        <h2 id="prof-username"></h2>
+                        <p>На торговой площадке с: <span id="prof-regdate"></span></p>
+                        <p>Рейтинг продавца: <span id="prof-rating" class="stars">⭐⭐⭐⭐⭐</span> (<span id="prof-revcount">0</span> отзывов)</p>
+                        <p>Активных объявлений: <span id="prof-itemscount">0</span></p>
+                    </div>
+                </div>
+                <div class="reviews-section">
+                    <h3>Отзывы о продавце</h3>
+                    <div id="reviews-list"></div>
+                    <form id="add-review-form" class="hidden">
+                        <h4>Оставить отзыв</h4>
+                        <select id="review-stars">
+                            <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+                            <option value="4">⭐⭐⭐⭐ (4)</option>
+                            <option value="3">⭐⭐⭐ (3)</option>
+                            <option value="2">⭐⭐ (2)</option>
+                            <option value="1">⭐ (1)</option>
+                        </select>
+                        <textarea id="review-text" placeholder="Опишите ваши впечатления от сделки..." required></textarea>
+                        <button type="submit" class="btn-primary">Отправить отзыв</button>
+                    </form>
+                </div>
+            </section>
+
+            <section id="page-admin" class="page hidden">
+                <h2>Панель администратора</h2>
+                <div class="admin-stats" id="admin-stats-box"></div>
+                <h3>Управление пользователями</h3>
+                <div id="admin-users-list"></div>
+                <h3>Добавить новый сервер</h3>
+                <form id="admin-add-server">
+                    <input type="text" id="new-server-name" placeholder="Название сервера" required>
+                    <button type="submit" class="btn-primary">Добавить</button>
+                </form>
+            </section>
+
+        </main>
+
+        <nav class="mobile-nav">
+            <button class="nav-item active" onclick="navigateTo('home')">🏠<span>Главная</span></button>
+            <button class="nav-item" onclick="navigateTo('create')">➕<span>Создать</span></button>
+            <button class="nav-item" onclick="navigateTo('chats')">💬<span>Чаты</span></button>
+            <button class="nav-item" onclick="navigateTo('favorites')">⭐<span>Избранное</span></button>
+            <button class="nav-item" onclick="navigateTo('profile-my')">👤<span>Профиль</span></button>
+        </nav>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
